@@ -29,8 +29,27 @@ class FireStore : AppCompatActivity() {
             savePerson(person)
         }
 
-        btnRetrieveData.setOnClickListener {
+        subscribeToRealtimeUpdates()
+
+        /*btnRetrieveData.setOnClickListener {
             retrievePersons()
+        }*/
+    }
+
+    private  fun subscribeToRealtimeUpdates(){
+        personCollectionRef.addSnapshotListener { value, error ->
+            error?.let {
+                Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                return@addSnapshotListener
+            }
+            value?.let {
+                val stringBuilder = StringBuilder()
+                for (document in it) {
+                    val person = document.toObject<Person>()
+                    stringBuilder.append("$person\n")
+                }
+                tvPersons.text = stringBuilder.toString()
+            }
         }
     }
 
