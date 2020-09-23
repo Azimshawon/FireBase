@@ -43,43 +43,43 @@ class MainActivity : AppCompatActivity() {
             updateProfile()
         }
 
-        googleID.setOnClickListener {
-            val option = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.webclient_id))
-                .requestEmail()
-                .build()
-            val signInClient = GoogleSignIn.getClient(this, option)
-            signInClient.signInIntent.also {
-                startActivityForResult(it, REQUEST_CODE_SIGN_IN )
-            }
-        }
+//        googleID.setOnClickListener {
+//            val option = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestIdToken(getString(R.string.webclient_id))
+//                .requestEmail()
+//                .build()
+//            val signInClient = GoogleSignIn.getClient(this, option)
+//            signInClient.signInIntent.also {
+//                startActivityForResult(it, REQUEST_CODE_SIGN_IN )
+//            }
+//        }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_SIGN_IN){
-            val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
-            account.let {
-                googleAuthForFirebase(it)
-            }
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == REQUEST_CODE_SIGN_IN){
+//            val account = GoogleSignIn.getSignedInAccountFromIntent(data).result
+//            account?.let {
+//                googleAuthForFirebase(it)
+//            }
+//        }
+//    }
 
-    private fun googleAuthForFirebase(it: GoogleSignInAccount?) {
-        val credentials = GoogleAuthProvider.getCredential(it?.idToken, null)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                auth.signInWithCredential(credentials).await()
-                withContext(Dispatchers.Main){
-                    Toast.makeText(this@MainActivity, "Successfully logged in", Toast.LENGTH_LONG).show()
-                }
-            } catch (e:Exception){
-                withContext(Dispatchers.Main){
-                    Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
+//    private fun googleAuthForFirebase(account: GoogleSignInAccount) {
+//        val credentials = GoogleAuthProvider.getCredential(account.idToken, null)
+//        CoroutineScope(Dispatchers.IO).launch {
+//            try {
+//                auth.signInWithCredential(credentials).await()
+//                withContext(Dispatchers.Main){
+//                    Toast.makeText(this@MainActivity, "Successfully logged in", Toast.LENGTH_LONG).show()
+//                }
+//            } catch (e:Exception){
+//                withContext(Dispatchers.Main){
+//                    Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        }
+//    }
 
     private fun updateProfile(){
         auth.currentUser?.let { user ->
@@ -154,9 +154,10 @@ class MainActivity : AppCompatActivity() {
         if (user == null){
             tvLoggedIn.text = "You are not logged in"
         } else {
-            tvLoggedIn.text = "You are logged in!"
-            etUsername.setText(user.displayName)
-            ivProfilePicture.setImageURI(user.photoUrl)
+            val intent = Intent(this, FireStore::class.java)
+            startActivity(intent)
+//            etUsername.setText(user.displayName)
+//            ivProfilePicture.setImageURI(user.photoUrl)
         }
     }
 }
