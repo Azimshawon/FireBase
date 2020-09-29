@@ -1,5 +1,6 @@
 package com.example.firebase
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -32,6 +33,11 @@ class FireStore : AppCompatActivity() {
 
         btnRetrieveData.setOnClickListener {
             retrievePersons()
+        }
+
+        btnImageActivity.setOnClickListener {
+            val intent = Intent(this, Image::class.java)
+            startActivity(intent)
         }
 
         btnDeletePerson.setOnClickListener {
