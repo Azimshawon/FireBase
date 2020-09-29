@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_image.*
@@ -41,6 +42,33 @@ class Image : AppCompatActivity() {
 
         btnDeleteImage.setOnClickListener {
             deleteImage("myImage")
+        }
+
+        listFile()
+
+
+    }
+
+    private fun listFile() =  CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val images = imageRef.child("images/").listAll().await()
+            val imagesUrls = mutableListOf<String>()
+            for (image in images.items) {
+                val url = image.downloadUrl.await()
+                imagesUrls.add(url.toString())
+            }
+            withContext(Dispatchers.Main) {
+                val imageAdapter = ImageAdapter(imagesUrls)
+                rvImages.apply {
+                    adapter = imageAdapter
+                    layoutManager = LinearLayoutManager(this@Image)
+                }
+            }
+
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@Image, e.message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
